@@ -15,6 +15,11 @@ python timesheet_submitter.py <csv file> [job number]
 
 The default job number is 1; this should only be a problem if you hold jobs in multiple faculties.
 
+After running the script you'll be presented with the login page; do this yourself (so I don't have to touch your credentials) and press enter on the script once you've finished with this.
+
+After that the script should fill everything out until you need to enter your timesheet submitter and lodge. The script will not press the lodge button for you just to be sure.
+
+
 ## CSV Format ##
 
 The csv you provide should contain the following columns:
