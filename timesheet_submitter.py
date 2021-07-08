@@ -5,6 +5,10 @@ import csv
 
 from selenium import webdriver
 
+##########################################################
+
+# A few lazy consts we're going to need later
+
 micro_sleep = 1.5
 small_sleep = 3
 sleep = 5
@@ -16,10 +20,12 @@ file_element = lambda driver, xpath, filepath: driver.find_element_by_xpath(xpat
 wait = lambda x: time.sleep(x)
 
 
+##########################################################
 # Load entries from csv
+##########################################################
+
 csv_file = ''
 job_number = 1
-
 
 # Time to get a file:
 if len(sys.argv) < 2:
@@ -29,6 +35,7 @@ else:
     file_name = sys.argv[1]
 
 try:
+    # Yeah this is a hack job
     raw_data = open(file_name, 'r').readlines()
 except:
     print("File error")
@@ -40,15 +47,38 @@ if len(sys.argv) < 3:
 else:
     job_number = sys.argv[2]
 
+##########################################################
+# Figure out which driver we're using
+##########################################################
+
+# I'm only testing this on Firefox myself
+try:
+    driver = webdriver.Firefox()
+except:
+    try:
+        driver = webdriver.Chrome()
+    except:
+        print("No Driver found, please use a recent version of either Firefox or Chrome")
+        exit()
+
+
+##########################################################
+# Login
+##########################################################
 
 initial_url = 'https://myhr.sydney.edu.au/alesco-wss-v17/faces/app/WJ0000.jspx'
 
-driver = webdriver.Firefox()
+
 driver.get(initial_url)
 print("Please Login")
 print("Once you have Logged in, Press Enter to Continue")
 while input() != '':
     continue
+
+
+##########################################################
+# Get a new timesheet
+##########################################################
 
 # Access elements from the menu
 click_element(driver,
@@ -83,6 +113,11 @@ click_element(driver,
     "/html/body/div/form/p[3]/input[1]")
 wait(small_sleep)
 
+
+##########################################################
+# Fill in the timesheet
+##########################################################
+
 # Get the right number of rows
 n_rows = len(raw_data)
 if n_rows > 20:
@@ -91,10 +126,9 @@ if n_rows > 20:
         wait(micro_sleep)
 
 
+# Enter Data
 for i, entry in enumerate(raw_data):
     entry = entry.split(',')
-
-    # Enter Data
 
     # Date
     element = driver.find_element_by_xpath(
@@ -114,37 +148,42 @@ for i, entry in enumerate(raw_data):
     field = element.find_element_by_xpath('./*[@id="P_PAYCODE"]')
     field.send_keys(entry[2])
 
-     # Analysis Code
-    if len(entry[3]) > 0:
-        try: # Because of pointless dialogue boxes
-            element = driver.find_element_by_xpath(
-            '/html/body/form/table/tbody/tr[{}]/td[10]'.format(i + 1))
-            field = element.find_element_by_xpath('./*[@id="P_GL_SUB_ACCOUNT"]')
-            field.send_keys(entry[3])
-        except:
-            pass
+    if len(entry > 3):
+        # Analysis Code
+        if len(entry[3]) > 0:
+            try: # Because of pointless dialogue boxes
+                element = driver.find_element_by_xpath(
+                '/html/body/form/table/tbody/tr[{}]/td[10]'.format(i + 1))
+                field = element.find_element_by_xpath('./*[@id="P_GL_SUB_ACCOUNT"]')
+                field.send_keys(entry[3])
+            except:
+                pass
 
-    # Topic
-    if len(entry[4]) > 0:
-        try: # Because of pointless dialogue boxes
-            element = driver.find_element_by_xpath(
-            '/html/body/form/table/tbody/tr[{}]/td[12]'.format(i + 1)) 
-            field = element.find_element_by_xpath('./*[@id="P_TOPIC"]')
-            field.send_keys(entry[4])
-        except: # This skips the dialogue boxes
-            element = driver.find_element_by_xpath(
-            '/html/body/form/table/tbody/tr[{}]/td[12]'.format(i + 1)) 
-            field = element.find_element_by_xpath('./*[@id="P_TOPIC"]')
-            field.send_keys(entry[4])
+    if len(entry > 4):
+        # Topic
+        if len(entry[4]) > 0:
+            try: # Because of pointless dialogue boxes
+                element = driver.find_element_by_xpath(
+                '/html/body/form/table/tbody/tr[{}]/td[12]'.format(i + 1)) 
+                field = element.find_element_by_xpath('./*[@id="P_TOPIC"]')
+                field.send_keys(entry[4])
+            except: # This skips the dialogue boxes
+                element = driver.find_element_by_xpath(
+                '/html/body/form/table/tbody/tr[{}]/td[12]'.format(i + 1)) 
+                field = element.find_element_by_xpath('./*[@id="P_TOPIC"]')
+                field.send_keys(entry[4])
 
-    # Details
-    if len(entry[5]) > 0:
-        try: # Because of pointless dialogue boxes
-            element = driver.find_element_by_xpath(
-            '/html/body/form/table/tbody/tr[{}]/td[13]'.format(i + 1)) 
-            field = element.find_element_by_xpath('./*[@id="P_TOPIC_DETAILS"]')
-            field.send_keys(entry[5])
-        except:
-            pass
+    if len(entry > 5):
+        # Details
+        if len(entry[5]) > 0:
+            try: # Because of pointless dialogue boxes
+                element = driver.find_element_by_xpath(
+                '/html/body/form/table/tbody/tr[{}]/td[13]'.format(i + 1)) 
+                field = element.find_element_by_xpath('./*[@id="P_TOPIC_DETAILS"]')
+                field.send_keys(entry[5])
+            except:
+                pass
 
+# You get to enter the approver and press the button
 print("READY TO LODGE!")
+print("Don't forget to select your timesheet approver")
