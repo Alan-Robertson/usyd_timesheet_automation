@@ -4,7 +4,7 @@ My employer requires that we manually track and transcribe data from our own rec
 
 The system itself has several bugs/flaws/surprise features which makes this a painful event. 
 
-As a result this selenium script exists.
+As a result this selenium script exists. It's very hard coded and very bare bones but it gets the job done.
 
 
 ## Usage ##
