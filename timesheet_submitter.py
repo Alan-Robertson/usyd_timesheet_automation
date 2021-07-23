@@ -9,6 +9,7 @@ from selenium import webdriver
 
 # A few lazy consts we're going to need later
 
+nano_sleep = 0.5
 micro_sleep = 1.5
 small_sleep = 3
 sleep = 5
@@ -123,7 +124,7 @@ n_rows = len(raw_data)
 if n_rows > 20:
     for _ in range(n_rows - 20):
         click_element(driver, "/html/body/form/p[3]/input[5]")
-        wait(micro_sleep)
+        wait(nano_sleep)
 
 
 # Enter Data
@@ -148,7 +149,7 @@ for i, entry in enumerate(raw_data):
     field = element.find_element_by_xpath('./*[@id="P_PAYCODE"]')
     field.send_keys(entry[2])
 
-    if len(entry > 3):
+    if len(entry) > 3:
         # Analysis Code
         if len(entry[3]) > 0:
             try: # Because of pointless dialogue boxes
@@ -159,7 +160,7 @@ for i, entry in enumerate(raw_data):
             except:
                 pass
 
-    if len(entry > 4):
+    if len(entry) > 4:
         # Topic
         if len(entry[4]) > 0:
             try: # Because of pointless dialogue boxes
@@ -173,7 +174,7 @@ for i, entry in enumerate(raw_data):
                 field = element.find_element_by_xpath('./*[@id="P_TOPIC"]')
                 field.send_keys(entry[4])
 
-    if len(entry > 5):
+    if len(entry) > 5:
         # Details
         if len(entry[5]) > 0:
             try: # Because of pointless dialogue boxes
