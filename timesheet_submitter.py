@@ -104,15 +104,18 @@ click_element(driver, '/html/body/p[3]')
 wait(micro_sleep)
 
 # Select Job
-click_element(driver,
-    "/html/body/div/form/table/tbody/tr[{}]/td[1]/input".format(job_number)
-    )
-wait(micro_sleep)
+try:
+    click_element(driver,
+        "/html/body/div/form/table/tbody/tr[{}]/td[1]/input".format(job_number)
+        )
+    wait(micro_sleep)
 
-# Continue
-click_element(driver,
-    "/html/body/div/form/p[3]/input[1]")
-wait(small_sleep)
+    # Continue
+    click_element(driver,
+        "/html/body/div/form/p[3]/input[1]")
+    wait(small_sleep)
+except:
+    pass
 
 
 ##########################################################
