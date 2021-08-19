@@ -6,8 +6,8 @@ The system itself has several bugs/flaws/surprise features which makes this a pa
 
 As a result this selenium script exists. It's very hard coded and very bare bones but it gets the job done.
 
-** Update **
-And we've changed payroll system which breaks the xpaths, updating now...
+** Update 19/08/21 **
+The payroll system has been superficially changed which breaks some Xpaths, I believe that I've caught them all but if that's not the case then let me know.
 
 ## Usage ##
 

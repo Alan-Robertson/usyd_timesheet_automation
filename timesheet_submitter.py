@@ -83,11 +83,11 @@ while input() != '':
 
 # Access elements from the menu
 click_element(driver,
-    "/html/body/div[1]/form/div/div/div/div[1]/div/div[3]/div/div/table/tbody/tr/td/div/div[1]/div[1]/table/tbody/tr/td[8]/div/div/table/tbody/tr/td[2]/a")
+    '''//*[@id="pt1:MWJ0000_WJC420"]''')
 wait(micro_sleep)
 
 click_element(driver,
-    "/html/body/div[1]/form/div[2]/div[2]/div/div/div/table/tbody/tr/td/table/tbody/tr[2]/td/div/table/tbody/tr[2]/td[2]")
+    "/html/body/div[2]/form/div[2]/div[2]/div/div/div/table/tbody/tr/td/table/tbody/tr[2]/td/div/table/tbody/tr[2]/td[2]")
 wait(small_sleep)
 
 # Switch to iframe
