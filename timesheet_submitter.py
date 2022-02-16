@@ -87,7 +87,8 @@ click_element(driver,
 wait(micro_sleep)
 
 click_element(driver,
-    "/html/body/div[2]/form/div[2]/div[2]/div/div/div/table/tbody/tr/td/table/tbody/tr[2]/td/div/table/tbody/tr[2]/td[2]")
+    "/html/body/div[2]/form/div[2]/div[2]/div/div/div/table/tbody/tr/td/table/tbody/tr[2]/td/div/table/tbody/tr[1]/td[2]")
+
 wait(small_sleep)
 
 # Switch to iframe
@@ -132,6 +133,7 @@ if n_rows > 20:
 
 # Enter Data
 for i, entry in enumerate(raw_data):
+    wait(nano_sleep)
     entry = entry.split(',')
 
     # Date
