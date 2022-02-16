@@ -30,6 +30,6 @@ The csv you provide should contain the following columns:
 DATE, HOURS, PAYCODE, [ANALYSIS CODE], [TOPIC], [DETAILS]
 ```
 
-No the script will not check if you have the correct topic; valid topics are probably only TUT and MRK anyway.
+The script will not check if you have the correct topic; valid topics are probably only TUT and MRK anyway.
 
 Don't forget to enter your timesheet provider!
