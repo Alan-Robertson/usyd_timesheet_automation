@@ -2,22 +2,24 @@ import selenium
 import time
 import sys
 import csv
+import os
 
 from selenium import webdriver
+from selenium.webdriver.common.by import By
 
 ##########################################################
 
 # A few lazy consts we're going to need later
-
 nano_sleep = 0.5
 micro_sleep = 1.5
 small_sleep = 3
 sleep = 5
 big_sleep = 15
 
-click_element = lambda driver, xpath: driver.find_element_by_xpath(xpath).click()
-text_element = lambda driver, xpath, text: driver.find_element_by_xpath(xpath).send_keys(text)
-file_element = lambda driver, xpath, filepath: driver.find_element_by_xpath(xpath).send_keys(filepath)
+find_element = lambda driver, xpath: driver.find_element("xpath", xpath)
+click_element = lambda driver, xpath: driver.find_element("xpath", xpath).click()
+text_element = lambda driver, xpath, text: driver.find_element("xpath", xpath).send_keys(text)
+file_element = lambda driver, xpath, filepath: driver.find_element("xpath", xpath).send_keys(filepath)
 wait = lambda x: time.sleep(x)
 
 
@@ -27,6 +29,7 @@ wait = lambda x: time.sleep(x)
 
 csv_file = ''
 job_number = 1
+raw_data = None
 
 # Time to get a file:
 if len(sys.argv) < 2:
@@ -35,12 +38,13 @@ if len(sys.argv) < 2:
 else:
     file_name = sys.argv[1]
 
-try:
-    # Yeah this is a hack job
-    raw_data = open(file_name, 'r').readlines()
-except:
-    print("File error")
-    exit()
+# Check if invalid
+if not os.path.exists(file_name):
+    raise ValueError("Cannot find file!")
+
+# Read the file contents
+with open(file_name, 'r', encoding='utf-8') as f:
+    raw_data = f.readlines()
 
 # Determine job number, default to 1
 if len(sys.argv) < 3:
@@ -67,8 +71,7 @@ except:
 # Login
 ##########################################################
 
-initial_url = 'https://myhr.sydney.edu.au/alesco-wss-v17/faces/app/WJ0000.jspx'
-
+initial_url = 'https://uosp.ascenderpay.com/uosp-wss/faces/landing/SAMLLanding.jspx'
 
 driver.get(initial_url)
 print("Please Login")
@@ -80,21 +83,20 @@ while input() != '':
 ##########################################################
 # Get a new timesheet
 ##########################################################
+# Switch to the academic timesheet frame
+driver.switch_to.frame("P1_IFRAME")
 
-# Access elements from the menu
-click_element(driver,
-    '''//*[@id="pt1:MWJ0000_WJC420"]''')
+# Access the academic time sheet from the main menu
+# NOTE: You may need to change this to Professional Timesheet (may possibly break)
+driver.find_element("xpath", '''//span[@title='Academic/Sessional Timesheet']''').click()
 wait(micro_sleep)
 
-click_element(driver,
-    "/html/body/div[2]/form/div[2]/div[2]/div/div/div/table/tbody/tr/td/table/tbody/tr[2]/td/div/table/tbody/tr[1]/td[2]")
+# Switch to the popped up frame
+driver.switch_to.default_content()
+driver.switch_to.frame(2)
+driver.switch_to.frame(1)
 
-wait(small_sleep)
-
-# Switch to iframe
-driver.switch_to.frame("pt1:r1:0:pt1:Main::f")
-
-# Create new timesheet
+# Click Add new Timesheet
 click_element(driver, "/html/body/p[2]/a")
 wait(micro_sleep)
 
@@ -112,16 +114,24 @@ try:
     wait(micro_sleep)
 
     # Continue
-    click_element(driver,
-        "/html/body/div/form/p[3]/input[1]")
+    driver.find_element("name", "Z_ACTION").click()
     wait(small_sleep)
+
 except:
     pass
+
+input("If continue isn't pressed, please click yourself.")
 
 
 ##########################################################
 # Fill in the timesheet
 ##########################################################
+
+# Hack for some reason during testing it cannot find table
+# entries if we do not reload the frame
+driver.switch_to.default_content()
+driver.switch_to.frame(2)
+driver.switch_to.frame(1)
 
 # Get the right number of rows
 n_rows = len(raw_data)
@@ -130,37 +140,35 @@ if n_rows > 20:
         click_element(driver, "/html/body/form/p[3]/input[5]")
         wait(nano_sleep)
 
-
 # Enter Data
 for i, entry in enumerate(raw_data):
     wait(nano_sleep)
     entry = entry.split(',')
 
     # Date
-    element = driver.find_element_by_xpath(
-        "/html/body/form/table/tbody/tr[{}]/td[4]".format(i + 1))
-    field = element.find_element_by_xpath('./*[@id="P_WORK_DATE"]')
-    field.send_keys(entry[0]) 
+    element = driver.find_element("xpath", f'''//*[@id="TSEntry"]/tr[{i + 1}]/td[4]''')
+    field = element.find_element("xpath", './*[@id="P_WORK_DATE"]')
+    field.send_keys(entry[0])
 
      # Hours
-    element = driver.find_element_by_xpath(
+    element = driver.find_element("xpath",
     '/html/body/form/table/tbody/tr[{}]/td[6]'.format(i + 1))
-    field = element.find_element_by_xpath('./*[@id="P_UNITS"]')
-    field.send_keys(entry[1])    
+    field = element.find_element("xpath", './*[@id="P_UNITS"]')
+    field.send_keys(entry[1])
 
     # Paycode
-    element = driver.find_element_by_xpath(
-    '/html/body/form/table/tbody/tr[{}]/td[7]'.format(i + 1)) 
-    field = element.find_element_by_xpath('./*[@id="P_PAYCODE"]')
+    element = driver.find_element("xpath",
+    '/html/body/form/table/tbody/tr[{}]/td[7]'.format(i + 1))
+    field = element.find_element("xpath",'./*[@id="P_PAYCODE"]')
     field.send_keys(entry[2])
 
     if len(entry) > 3:
         # Analysis Code
         if len(entry[3]) > 0:
             try: # Because of pointless dialogue boxes
-                element = driver.find_element_by_xpath(
+                element = driver.find_element("xpath",
                 '/html/body/form/table/tbody/tr[{}]/td[10]'.format(i + 1))
-                field = element.find_element_by_xpath('./*[@id="P_GL_SUB_ACCOUNT"]')
+                field = element.find_element("xpath",'./*[@id="P_GL_SUB_ACCOUNT"]')
                 field.send_keys(entry[3])
             except:
                 pass
@@ -169,23 +177,23 @@ for i, entry in enumerate(raw_data):
         # Topic
         if len(entry[4]) > 0:
             try: # Because of pointless dialogue boxes
-                element = driver.find_element_by_xpath(
-                '/html/body/form/table/tbody/tr[{}]/td[12]'.format(i + 1)) 
-                field = element.find_element_by_xpath('./*[@id="P_TOPIC"]')
+                element = driver.find_element("xpath",
+                '/html/body/form/table/tbody/tr[{}]/td[12]'.format(i + 1))
+                field = element.find_element("xpath",'./*[@id="P_TOPIC"]')
                 field.send_keys(entry[4])
             except: # This skips the dialogue boxes
-                element = driver.find_element_by_xpath(
-                '/html/body/form/table/tbody/tr[{}]/td[12]'.format(i + 1)) 
-                field = element.find_element_by_xpath('./*[@id="P_TOPIC"]')
+                element = driver.find_element("xpath",
+                '/html/body/form/table/tbody/tr[{}]/td[12]'.format(i + 1))
+                field = element.find_element("xpath",'./*[@id="P_TOPIC"]')
                 field.send_keys(entry[4])
 
     if len(entry) > 5:
         # Details
         if len(entry[5]) > 0:
             try: # Because of pointless dialogue boxes
-                element = driver.find_element_by_xpath(
-                '/html/body/form/table/tbody/tr[{}]/td[13]'.format(i + 1)) 
-                field = element.find_element_by_xpath('./*[@id="P_TOPIC_DETAILS"]')
+                element = driver.find_element("xpath",
+                '/html/body/form/table/tbody/tr[{}]/td[13]'.format(i + 1))
+                field = element.find_element("xpath",'./*[@id="P_TOPIC_DETAILS"]')
                 field.send_keys(entry[5])
             except:
                 pass
