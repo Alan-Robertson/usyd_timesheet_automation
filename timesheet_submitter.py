@@ -47,6 +47,7 @@ with open(file_name, 'r', encoding='utf-8') as f:
     raw_data = f.readlines()
 
 # Determine job number, default to 1
+# NOTE This is indicative of the order not the actual job ID
 if len(sys.argv) < 3:
     job_number = 1
 else:
@@ -109,7 +110,7 @@ wait(micro_sleep)
 # Select Job
 try:
     click_element(driver,
-        "/html/body/div/form/table/tbody/tr[{}]/td[1]/input".format(job_number)
+        f"/html/body/div/form/table/tbody/tr[{job_number}]/td[1]/input"
         )
     wait(micro_sleep)
 
@@ -200,4 +201,4 @@ for i, entry in enumerate(raw_data):
 
 # You get to enter the approver and press the button
 print("READY TO LODGE!")
-print("Don't forget to select your timesheet approver")
+input("Don't forget to select your timesheet approver")
