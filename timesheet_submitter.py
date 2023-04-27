@@ -101,7 +101,12 @@ click_element(driver, "/html/body/p[2]/a")
 wait(micro_sleep)
 
 # Start Date
-text_element(driver, '//*[@id="P_START_DATE"]', raw_data[0].split(',')[0])
+start_date = min(
+    [line.split(',')[0] for line in raw_data],
+    key=lambda s: (lambda d: (int(d[2]), int(d[1]), int(d[0])))(s.split("/"))
+    )
+
+text_element(driver, '//*[@id="P_START_DATE"]', start_date)
 text_element(driver, '//*[@id="P_CALENDAR_CODE"]', "CAL")
 click_element(driver, '/html/body/p[3]')
 wait(micro_sleep)
