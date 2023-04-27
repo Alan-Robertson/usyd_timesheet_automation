@@ -201,3 +201,4 @@ for i, entry in enumerate(raw_data):
 # You get to enter the approver and press the button
 print("READY TO LODGE!")
 print("Don't forget to select your timesheet approver")
+input("Press enter to finish and close the browser window")
