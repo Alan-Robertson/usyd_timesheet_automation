@@ -134,8 +134,13 @@ try_and_wait(partial(driver.switch_to.frame, 1), tries=5, wait_time=micro_sleep)
 # Click Add new Timesheet
 try_and_wait(partial(click_element, driver, "/html/body/p[2]/a"), tries=5, wait_time=micro_sleep)
 
+start_date = min(
+    [line.split(',')[0] for line in raw_data],
+    key=lambda s: (lambda d: (int(d[2]), int(d[1]), int(d[0])))(s.split("/"))
+)
+
 # Start Date
-try_and_wait(partial(text_element, driver, '//*[@id="P_START_DATE"]', raw_data[0].split(',')[0]), tries=5, wait_time=micro_sleep)
+try_and_wait(partial(text_element, driver, '//*[@id="P_START_DATE"]', start_date), tries=5, wait_time=micro_sleep)
 try_and_wait(partial(text_element, driver, '//*[@id="P_CALENDAR_CODE"]', "CAL"), tries=5, wait_time=micro_sleep)
 try_and_wait(partial(click_element, driver, '/html/body/p[3]'), tries=5, wait_time=micro_sleep)
 
