@@ -91,6 +91,9 @@ driver.switch_to.frame("P1_IFRAME")
 # NOTE: You may need to change this to Professional Timesheet (may possibly break)
 driver.find_element("xpath", '''//span[@title='Academic/Sessional Timesheet']''').click()
 wait(micro_sleep)
+wait(micro_sleep)
+wait(micro_sleep)
+wait(micro_sleep)
 
 # Switch to the popped up frame
 driver.switch_to.default_content()
