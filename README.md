@@ -22,13 +22,16 @@ After running the script you'll be presented with the login page; do this yourse
 
 After that the script should fill everything out until you need to enter your timesheet submitter and lodge. The script will not press the lodge button for you just to be sure.
 
+NOTE: Make sure you do not include any `+`, `,` or `/` characters in your script.
+
 
 ## CSV Format ##
 
 The csv you provide should contain the following columns:
 
 ```
-DATE, HOURS, PAYCODE, [ANALYSIS CODE], [TOPIC], [DETAILS]
+DATE, UNIT, HOURS, PAYCODE, [ANALYSIS CODE], [TOPIC], [DETAILS]
+
 ```
 
 The script will not check if you have the correct topic; valid topics are probably only TUT and MRK anyway.
