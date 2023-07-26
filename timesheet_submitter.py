@@ -144,6 +144,7 @@ try_and_wait(partial(text_element, driver, '//*[@id="P_START_DATE"]', start_date
 try_and_wait(partial(text_element, driver, '//*[@id="P_CALENDAR_CODE"]', "CAL"), tries=5, wait_time=micro_sleep)
 try_and_wait(partial(click_element, driver, '/html/body/p[3]'), tries=5, wait_time=micro_sleep)
 
+
 # Select Job
 try_and_wait(partial(click_element, driver, f"/html/body/div/form/table/tbody/tr[{job_number}]/td[1]/input"),
              tries=5, wait_time=micro_sleep)
